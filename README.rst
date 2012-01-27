@@ -21,13 +21,17 @@ gen_nodes is a list of tuples which for each element you could now add in your d
 
 * a new sample_one directive
  ::
+
   .. sample_one::  one thing
-                
+ 
+
 
 
 * a new sample_onelist directive
  ::
-  .. sample_onelist::
+  
+   .. sample_onelist::
+
                
 
 The  sample_onelist will not appear in your documentation if you set False in your conf.py   gen_nodes = [('sample_one', False),...
