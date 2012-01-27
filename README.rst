@@ -43,9 +43,10 @@ Plz note that  the form of a "list directive is always 'namenode'+list
 _`install me`
 =============
 
-::
+with buildout 
 
- cat << EOF > buildout.cfg 
+edit a buildout.cfg like this ::
+
  [buildout]
 
  extensions =
@@ -67,14 +68,26 @@ _`install me`
  sphinxcontrib-gen_node = git git@github.com:jpcw/sphinxcontrib-gen_node.git
 
  [versions]
- EOF
+
+then play your buildout configuration ::
 
  wget http://svn.zope.org/*checkout*/zc.buildout/trunk/bootstrap/bootstrap.py
  python boostrap.py -d 
 
  bin/buildout -Nv
 
+create your documentation::
+
  bin/sphinx-quickstart
+
+edit your Makefile | make.bat like this ::
+
+ SPHINXBUILD   = bin/sphinx-build
+
+update your source/conf.py::
+
+ extensions = ['sphinxcontrib.gen_node'] 
+ gen_nodes = [('sample_one', True), ('sample_two', True), ('sample_three', True)]    
 
 
 Enjoy
