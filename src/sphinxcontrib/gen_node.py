@@ -11,8 +11,6 @@
     :copyright: Copyright 2007-2011 by the Sphinx team, see AUTHORS.
     :license: BSD, see LICENSE for details.
 """
-import os
-import ConfigParser
 
 from docutils import nodes
 
@@ -58,26 +56,8 @@ class BaseNodeList(Directive):
     option_spec = {}
 
     def run(self):
-        bcls = NODES[self.name[0:-4].lower()]['node_gen']
+        bcls = NODES[self.name[0:-len(LISTED)].lower()]['node_gen']
         return [bcls('')]
-
-
-class MetaGen_Node(type):
-    """
-    A gen_node entry, displayed (if configured) in the form of an admonition.
-    """
-
-    def __new__(cls, name, bases, dct):
-        return type.__new__(cls, name, bases, dct)
-
-
-class MetaGen_NodeList(type):
-    """
-    A list of all gen_node entries.
-    """
-
-    def __new__(cls, name, bases, dct):
-        return type.__new__(cls, name, bases, dct)
 
 
 def setup_nodes(config_nodes):
@@ -85,7 +65,7 @@ def setup_nodes(config_nodes):
     for desired_node in config_nodes:
         elt = {}
         elt['name'] = desired_node[0].title()
-        elt['namelist'] = '%sList' % desired_node[0].title()
+        elt['namelist'] = '%s%s' % (desired_node[0].title(), LISTED.title())
         globals()[desired_node[0]] = MetaNode(desired_node[0],
                                              (nodes.Admonition,
                                               nodes.Element), {})
@@ -96,8 +76,8 @@ def setup_nodes(config_nodes):
                                                         (nodes.General,
                                                          nodes.Element), {})
         elt['node_gen'] = globals()['%s%s' % (desired_node[0], LISTED)]
-        elt['meta_dir'] = MetaGen_Node(elt['name'], (BaseNode,), {})
-        elt['meta_dirlist'] = MetaGen_NodeList(elt['namelist'],
+        elt['meta_dir'] = MetaNode(elt['name'], (BaseNode,), {})
+        elt['meta_dirlist'] = MetaNode(elt['namelist'],
                                                (BaseNodeList,),
                                                {})
         NODES[desired_node[0]] = elt
@@ -129,7 +109,7 @@ def process_gen_nodes(app, doctree):
             })
 
 
-def process_gen_nodes_nodes(app, doctree, fromdocname):
+def process_gen_nodes_list(app, doctree, fromdocname):
     # Replace all gen_nodelist nodes with a list of the collected gen_nodes.
     # Augment each gen_node with a backlink to the original location.
     env = app.builder.env
@@ -227,5 +207,5 @@ def setup(app):
         app.add_directive(elt+LISTED, NODES[elt]['meta_dirlist'])
 
     app.connect('doctree-read', process_gen_nodes)
-    app.connect('doctree-resolved', process_gen_nodes_nodes)
+    app.connect('doctree-resolved', process_gen_nodes_list)
     app.connect('env-purge-doc', purge_gen_nodes)
