@@ -130,18 +130,24 @@ def process_gen_nodes_list(app, doctree, fromdocname):
             content = []
 
             for gen_node_info in getattr(env, NODES[elt]['env_all']):
-                para = nodes.paragraph(classes=['%s-source' % elt])
+                if gen_node_info['target']['refid'] == 'index-0':
+                    group = None
+                    group = nodes.subtitle(classes=['%s-group' % elt])
+                    group += nodes.Text(gen_node_info['docname'])
+                    content.append(group)
+                #para_desc
+                para_desc = nodes.paragraph(classes=['%s-source' % elt])
                 description = _('(The <<original entry>> is located in '
                                 ' %s, line %d.)') % \
                               (gen_node_info['source'], gen_node_info['lineno'])
                 desc1 = description[:description.find('<<')]
                 desc2 = description[description.find('>>') + 2:]
-                para += nodes.Text(desc1, desc1)
+                para_desc += nodes.Text(desc1, desc1)
 
                 # Create a reference
                 newnode = nodes.reference('', '', internal=True)
-                innernode = nodes.emphasis(_('original entry'),
-                                           _('original entry'))
+                innernode = nodes.emphasis(_(elt),
+                                           _(elt))
                 try:
                     newnode['refuri'] = app.builder.get_relative_uri(
                         fromdocname, gen_node_info['docname'])
@@ -150,8 +156,8 @@ def process_gen_nodes_list(app, doctree, fromdocname):
                     # ignore if no URI can be determined, e.g. for LaTeX output
                     pass
                 newnode.append(innernode)
-                para += newnode
-                para += nodes.Text(desc2, desc2)
+
+                para_desc += newnode
 
                 # (Recursively) resolve references in the gen_node content
                 gen_node_entry = gen_node_info[elt]
@@ -159,9 +165,10 @@ def process_gen_nodes_list(app, doctree, fromdocname):
                                        gen_node_info['docname'],
                                        app.builder)
 
+#                import pdb; pdb.set_trace()  ## Breakpoint ##
                 # Insert into the gen_nodelist
+                gen_node_info[elt].children[0].children[0]=newnode
                 content.append(gen_node_entry)
-                content.append(para)
 
             node.replace_self(content)
 
@@ -169,12 +176,9 @@ def process_gen_nodes_list(app, doctree, fromdocname):
 def purge_gen_nodes(app, env, docname):
 
     for elt in NODES:
-        if not hasattr(env, NODES[elt]['env_all']):
-            return
-
-        availables = [xgen_node for xgen_node in getattr(env, NODES[elt]['env_all'])
-                      if xgen_node['docname'] != docname]
-        setattr(env, NODES[elt]['env_all'], availables)
+        if hasattr(env, NODES[elt]['env_all']):
+            alls = [xgen_node for xgen_node in getattr(env, NODES[elt]['env_all'])]
+            setattr(env, NODES[elt]['env_all'], alls)
 
 
 def visit_node(self, node):
