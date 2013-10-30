@@ -72,6 +72,8 @@ def setup_nodes(config_nodes):
         elt['node_adm'] = globals()[desired_node[0]]
         elt['env_all'] = '%s_all_gen_nodes' % desired_node[0]
         elt['show_list'] = desired_node[1]
+        elt['group_title_doc'] = desired_node[2]
+        elt['show_desc_paragraph'] = desired_node[3]
         globals()['%s%s' % (desired_node[0], LISTED)] = MetaNode('%s%s' % (desired_node[0], LISTED),
                                                         (nodes.General,
                                                          nodes.Element), {})
@@ -130,11 +132,14 @@ def process_gen_nodes_list(app, doctree, fromdocname):
             content = []
 
             for gen_node_info in getattr(env, NODES[elt]['env_all']):
-                if gen_node_info['target']['refid'] == 'index-0':
-                    group = None
-                    group = nodes.subtitle(classes=['%s-group' % elt])
-                    group += nodes.Text(gen_node_info['docname'])
-                    content.append(group)
+
+                if NODES[elt]['group_title_doc']:
+                    if gen_node_info['target']['refid'] == 'index-0':
+                        group = None
+                        group = nodes.subtitle(classes=['%s-group' % elt])
+                        group += nodes.Text(gen_node_info['docname'])
+                        content.append(group)
+
                 #para_desc
                 para_desc = nodes.paragraph(classes=['%s-source' % elt])
                 description = _('(The <<original entry>> is located in '
@@ -158,6 +163,7 @@ def process_gen_nodes_list(app, doctree, fromdocname):
                 newnode.append(innernode)
 
                 para_desc += newnode
+                para_desc += nodes.Text(desc2, desc2)
 
                 # (Recursively) resolve references in the gen_node content
                 gen_node_entry = gen_node_info[elt]
@@ -165,10 +171,11 @@ def process_gen_nodes_list(app, doctree, fromdocname):
                                        gen_node_info['docname'],
                                        app.builder)
 
-#                import pdb; pdb.set_trace()  ## Breakpoint ##
                 # Insert into the gen_nodelist
                 gen_node_info[elt].children[0].children[0]=newnode
                 content.append(gen_node_entry)
+                if NODES[elt]['show_desc_paragraph']:
+                    content.append(para_desc)
 
             node.replace_self(content)
 
@@ -177,8 +184,9 @@ def purge_gen_nodes(app, env, docname):
 
     for elt in NODES:
         if hasattr(env, NODES[elt]['env_all']):
-            alls = [xgen_node for xgen_node in getattr(env, NODES[elt]['env_all'])]
-            setattr(env, NODES[elt]['env_all'], alls)
+            availables = [xgen_node for xgen_node in getattr(env, NODES[elt]['env_all'])
+                          if xgen_node['docname'] != docname]
+            setattr(env, NODES[elt]['env_all'], availables)
 
 
 def visit_node(self, node):
@@ -191,6 +199,7 @@ def depart_node(self, node):
 
 def setup(app):
 
+# A NODES['elt']
 #{'delayed': {'env_all': 'delayed_all_gen_nodes',
 #             'meta_dir': <class 'sphinxcontrib.gen_node.Delayed'>,
 #             'meta_dirlist': <class 'sphinxcontrib.gen_node.DelayedList'>,
