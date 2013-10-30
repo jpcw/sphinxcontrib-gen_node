@@ -169,9 +169,12 @@ def process_gen_nodes_list(app, doctree, fromdocname):
 def purge_gen_nodes(app, env, docname):
 
     for elt in NODES:
-        if hasattr(env, NODES[elt]['env_all']):
-            alls = [xgen_node for xgen_node in getattr(env, NODES[elt]['env_all'])]
-            setattr(env, NODES[elt]['env_all'], alls)
+        if not hasattr(env, NODES[elt]['env_all']):
+            return
+
+        availables = [xgen_node for xgen_node in getattr(env, NODES[elt]['env_all'])
+                      if xgen_node['docname'] != docname]
+        setattr(env, NODES[elt]['env_all'], availables)
 
 
 def visit_node(self, node):
