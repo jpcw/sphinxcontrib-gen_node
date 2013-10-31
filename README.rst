@@ -20,16 +20,14 @@ explanations
 
 gen_nodes is a list of tuples which for each element you could now add in your documentation like you do with 'sphinx-ext-todo':
 
-* a new sample_one directive
- ::
+* a new sample_one directive ::
 
   .. sample_one::  one thing
  
 
 
 
-* a new sample_onelist directive
- ::
+* a new sample_onelist directive ::
   
    .. sample_onelist::
 

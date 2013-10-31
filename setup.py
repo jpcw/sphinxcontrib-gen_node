@@ -25,7 +25,6 @@ requires = ['Sphinx>=0.6']
 setup(
     name='sphinxcontrib-gen_node',
     version=version,
-    url='http://bitbucket.org/birkenfeld/sphinx-contrib',
     download_url='http://pypi.python.org/pypi/sphinxcontrib-gen_node',
     license='BSD',
     author='Jean-Philippe Camguilhem',
