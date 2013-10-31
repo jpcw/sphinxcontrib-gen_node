@@ -1,25 +1,38 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup, find_packages
+import os
 
-long_desc = '''
-This package contains the gen_node Sphinx extension.
 
-.. add description here ..
-'''
+version = '0.1.dev0'
 
+here = os.path.abspath(os.path.dirname(__file__))
+
+def read_file(*pathes):
+    path = os.path.join(here, *pathes)
+    if os.path.isfile(path):
+        with open(path, 'r') as desc_file:
+            return desc_file.read()
+    else:
+        return ''
+
+desc_files = (('README.rst',), ('docs', 'CHANGES.rst'),
+              ('docs', 'CONTRIBUTORS.rst'))
+
+long_description = '\n\n'.join([read_file(*pathes) for pathes in desc_files])
 requires = ['Sphinx>=0.6']
 
 setup(
     name='sphinxcontrib-gen_node',
-    version='0.1',
+    version=version,
     url='http://bitbucket.org/birkenfeld/sphinx-contrib',
     download_url='http://pypi.python.org/pypi/sphinxcontrib-gen_node',
     license='BSD',
     author='Jean-Philippe Camguilhem',
     author_email='jean-philippe.camguilhem__at__makina-corpus.com',
     description='Sphinx generic nodes "todo like" extension',
-    long_description=long_desc,
+    long_description=long_description,
+    url='https://github.com/jpcw/sphinxcontrib-gen_node',
     zip_safe=False,
     classifiers=[
         'Development Status :: 4 - Beta',

@@ -8,10 +8,11 @@ You love sphinx-ext-todo, and want more directives like this ?
 
 This extension is for you.
 
-`install me`_ with zc.buildout or clone and setup.py install|develop and add this to your conf.py ::
+
+`install me`_ with zc.buildout| pip | easy_install or clone and setup.py install|develop and add this to your conf.py ::
  
  extensions = ['sphinxcontrib.gen_node'] 
- gen_nodes = [('sample_one', True), ('sample_two', True), ('sample_three', True)]
+ gen_nodes = [('sample_one', True, True, False), ('sample_two', True, False, False),]
 
 
 explanations 
@@ -34,61 +35,60 @@ gen_nodes is a list of tuples which for each element you could now add in your d
 
                
 
-The  sample_onelist will not appear in your documentation if you set False in your conf.py   gen_nodes = [('sample_one', False),...
+The  sample_onelist will not appear in your documentation if you set False in your conf.py   gen_nodes = [('sample_one', False, False, False),... on the second argument.
 
-Plz note that  the form of a "list directive is always 'namenode'+list
+options :
+
+ + sample_one is the name of your new admonition, you'll write ::
+
+   .. sample_one:: A text here
+
+ + The first (True|False) argument enables the list Plz note that  the form of a "list directive is always 'namenode'+list ie ::
+
+   .. sample_onelist:: 
+
+ + the second (True|False) renders gathering by doc subtitle 
+
+ + the third (True|False) renders a paragraph with filename and line number (like on todo-list) with sphinxext.todo 
 
 
 
 _`install me`
 =============
 
-with buildout 
+easy_install ::
+ 
+ easy_install sphinxcontrib-gen_node
+ 
 
-edit a buildout.cfg like this ::
+pip ::
+ 
+ pip install Sphinx
+ pip sphinxcontrib-gen_node
 
- [buildout]
+zc.buildout ::
 
- extensions =
-     mr.developer
-     buildout-versions
-
- auto-checkout = sphinxcontrib-gen_node
-
- parts =
-     sphinx
-
- [sphinx]                                   :
- recipe = zc.recipe.egg
  eggs =
      Sphinx
      sphinxcontrib-gen_node
 
- [sources]
- sphinxcontrib-gen_node = git git@github.com:jpcw/sphinxcontrib-gen_node.git
-
- [versions]
-
-then play your buildout configuration ::
-
- wget http://svn.zope.org/*checkout*/zc.buildout/trunk/bootstrap/bootstrap.py
- python boostrap.py -d 
-
- bin/buildout -Nv
-
-create your documentation::
-
- bin/sphinx-quickstart
-
-edit your Makefile | make.bat like this ::
-
- SPHINXBUILD   = bin/sphinx-build
 
 update your source/conf.py::
 
  extensions = ['sphinxcontrib.gen_node'] 
- gen_nodes = [('sample_one', True), ('sample_two', True), ('sample_three', True)]    
+ gen_nodes = [('sample_one', True, True, False), ('sample_two', True, False, False)]    
 
 
-Enjoy
+Credits
+========
+Companies
+---------
+|makinacom|_
+
+  * `Planet Makina Corpus <http://www.makina-corpus.com>`_
+      * `Contact us <mailto:python@makina-corpus.org>`_
+
+      .. |makinacom| image:: http://depot.makina-corpus.org/public/logo.gif
+      .. _makinacom:  http://www.makina-corpus.com
+
 
